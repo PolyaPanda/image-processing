@@ -1,0 +1,27 @@
+{% extends 'image_app/base.html' %}
+
+{% block content %}
+    <section class="upload-section">
+        <h2>Upload an Image</h2>
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn">Upload</button>
+        </form>
+    </section>
+
+    <section class="gallery-section">
+        <h2>Image Gallery</h2>
+        <div class="image-gallery">
+            {% for image in images %}
+                <div class="image-wrapper">
+                    <a href="{% url 'image_app:process_image' image.id %}">
+                        <img src="{{ image.image.url }}" alt="Uploaded Image">
+                    </a>
+                </div>
+            {% empty %}
+                <p>No images uploaded yet.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

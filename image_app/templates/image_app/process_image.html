@@ -1,0 +1,40 @@
+{% extends 'image_app/base.html' %}
+
+{% block content %}
+    <section class="processing-section">
+        <h2>Process Image</h2>
+        <div class="image-display">
+            <div class="original-image">
+                <h3>Original Image</h3>
+                <img src="{{ image.image.url }}" alt="Original Image">
+            </div>
+
+            {% if processed_image_url %}
+                <div class="processed-image">
+                    <h3>Processed Image</h3>
+                    <img src="/{{ processed_image_url }}" alt="Processed Image">
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="processing-options">
+            <h3>Apply Filters</h3>
+            <form method="post" class="filter-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="threshold">Threshold (1-255):</label>
+                    <input type="number" name="threshold" id="threshold" min="1" max="255" value="128">
+                </div>
+                <button type="submit" class="btn">Apply Thresholding</button>
+            </form>
+            
+            <form method="post" class="filter-form">
+                {% csrf_token %}
+                <button type="submit" name="smooth" class="btn">Apply Smoothing</button>
+            </form>
+        </div>
+    </section>
+    
+    <br>
+    <a href="{% url 'image_app:index' %}" class="back-link">Back to Gallery</a>
+{% endblock %}
