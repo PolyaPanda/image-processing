@@ -24,6 +24,45 @@ def threshold_image(image_path, threshold=128):
     return image
 
 
+def otsu_threshold_image(image_path):
+    image = Image.open(image_path).convert("L")
+    histogram = image.histogram()
+
+    total_pixels = sum(histogram)
+    current_max, threshold = 0, 0
+    sum_total, sum_background = 0, 0
+
+    for i in range(256):
+        sum_total += i * histogram[i]
+
+    weight_background = 0
+    for i in range(256):
+        weight_background += histogram[i]
+        if weight_background == 0:
+            continue
+
+        weight_foreground = total_pixels - weight_background
+        if weight_foreground == 0:
+            break
+
+        sum_background += i * histogram[i]
+        mean_background = sum_background / weight_background
+        mean_foreground = (sum_total - sum_background) / weight_foreground
+
+        between_class_variance = (
+            weight_background
+            * weight_foreground
+            * (mean_background - mean_foreground) ** 2
+        )
+
+        if between_class_variance > current_max:
+            current_max = between_class_variance
+            threshold = i
+
+    thresholded_image = image.point(lambda p: 255 if p > threshold else 0)
+    return thresholded_image
+
+
 def smooth_image(image_path):
     image = Image.open(image_path)
     image = image.filter(ImageFilter.GaussianBlur(radius=2))
@@ -39,6 +78,8 @@ def process_image(request, image_id):
         if "threshold" in request.POST:
             threshold = int(request.POST.get("threshold", 128))
             processed_image = threshold_image(image_obj.image.path, threshold)
+        elif "otsu" in request.POST:
+            processed_image = otsu_threshold_image(image_obj.image.path)
         elif "smooth" in request.POST:
             processed_image = smooth_image(image_obj.image.path)
 

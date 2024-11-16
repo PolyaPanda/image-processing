@@ -19,6 +19,7 @@
 
         <div class="processing-options">
             <h3>Apply Filters</h3>
+
             <form method="post" class="filter-form">
                 {% csrf_token %}
                 <div class="form-group">
@@ -26,6 +27,11 @@
                     <input type="number" name="threshold" id="threshold" min="1" max="255" value="128">
                 </div>
                 <button type="submit" class="btn">Apply Thresholding</button>
+            </form>
+
+            <form method="post" class="filter-form">
+                {% csrf_token %}
+                <button type="submit" name="otsu" class="btn">Apply Otsu Threshold</button>
             </form>
             
             <form method="post" class="filter-form">
